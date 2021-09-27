@@ -4,3 +4,9 @@
 
 ### Варіант
 Варіант №16: Колекція числових множин на основі RD-дерева
+
+---
+
+## Project structure (draft)
+
+![project structure draft](./aa-lab-structure.svg)
