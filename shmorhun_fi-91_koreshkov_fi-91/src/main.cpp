@@ -1,7 +1,12 @@
+#include "Request.h"
 #include <iostream>
-#include <fstream>
+
+using namespace std;
+
 
 int main() {
-    std::cout << "Hello, world!" << std::endl;
-    return 0; 
+	Request* ne = new Request();
+	int* x = new int[3];
+	ne->Insert(x);
+
 }
