@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 // Set
 
@@ -11,8 +12,8 @@ public:
 
 	Set(std::vector<int> _data) {
 		std::sort(_data.begin(), _data.end());
-		std::unique(_data.begin(), _data.end());
-		data = _data;
+		auto last = std::unique(_data.begin(), _data.end());
+		data.insert(data.begin(), _data.begin(), last);
 	}
 	Set() {}
 
@@ -26,4 +27,7 @@ public:
 
 	bool IsSubsetOf(Set& other);
 	bool IsDisjointWith(Set& other);
+
+	friend std::ostream& operator<<(std::ostream&, Set&);
 };
+

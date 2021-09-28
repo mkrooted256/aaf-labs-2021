@@ -3,10 +3,10 @@
 
 bool Set::Contains(int x)
 {
-	return std::binary_search(data.begin(), data.end(), x)
+	return std::binary_search(data.begin(), data.end(), x);
 }
 
-int Set::Insert(int x) {
+bool Set::Insert(int x) {
 	for (auto i = data.begin(); i != data.end(); i++) {
 		if (x == *i) {
 			// X is already in the set
@@ -14,16 +14,16 @@ int Set::Insert(int x) {
 		}
 		if (x < *i) {
 			// insert before.
-			data.insert(i, x)
-				return 1;
+			data.insert(i, x);
+			return true;
 		}
 	}
 	// if x > every elem of set, push it to the end
-	data.push_back(x)
-		return 1;
+	data.push_back(x);
+	return true;
 }
 
-int Set::Delete(int x) {
+bool Set::Delete(int x) {
 	for (auto i = data.begin(); i != data.end(); i++) {
 		if (*i > x) {
 			// X is not in the set
@@ -39,8 +39,8 @@ int Set::Delete(int x) {
 
 Set Set::Union(Set& other) {
 	Set u = Set();
-	int i = data.begin(), j = other.data.begin();
-	while (i != data.end() and j != other.data.end()) {
+	auto i = data.begin(), j = other.data.begin();
+	while (i != data.end() && j != other.data.end()) {
 		if (*i == *j) {
 			u.data.push_back(*i);
 			i++;
@@ -50,7 +50,7 @@ Set Set::Union(Set& other) {
 		if (*i < *j) {
 			u.data.push_back(*i);
 			i++;
-			continue
+			continue;
 		}
 		// otherwise *i > *j:
 		u.data.push_back(*j);
@@ -69,8 +69,8 @@ Set Set::Union(Set& other) {
 
 Set Set::Intersection(Set& other) {
 	Set cap = Set();
-	int i = data.begin(), j = other.data.begin();
-	while (i != data.end() and j != other.data.end()) {
+	auto i = data.begin(), j = other.data.begin();
+	while (i != data.end() && j != other.data.end()) {
 		if (*i == *j) {
 			// same element found. add it to the intersection
 			cap.data.push_back(*i);
@@ -103,8 +103,8 @@ Set Set::Intersection(Set& other) {
 
 Set Set::Minus(Set& other) {
 	Set r = Set();
-	int i = data.begin(), j = other.data.begin();
-	while (i != data.end() and j != other.data.end()) {
+	auto i = data.begin(), j = other.data.begin();
+	while (i != data.end() && j != other.data.end()) {
 		if (*i == *j) {
 			// same element found. remove it. everything ok.
 			i++;
@@ -124,12 +124,13 @@ Set Set::Minus(Set& other) {
 			i = lb;
 		}
 	}
+	r.data.insert(r.data.end(), i, data.end());
 	return r;
 }
 
 bool Set::IsSubsetOf(Set& other) {
-	int i = data.begin(), j = other.data.begin();
-	while (i != data.end() and j != other.data.end()) {
+	auto i = data.begin(), j = other.data.begin();
+	while (i != data.end() && j != other.data.end()) {
 		if (*i == *j) {
 			// same element found. add it to the intersection. everything ok.
 			i++;
@@ -146,11 +147,11 @@ bool Set::IsSubsetOf(Set& other) {
 			return false;
 		}
 	}
-	if (i == data.end() and j == other.data.end()) {
+	if (i == data.end() && j == other.data.end()) {
 		// OK
 		return true;
 	}
-	if (j == data.end()) {
+	if (j == other.data.end()) {
 		// superset exhausted while subset is not.
 		return false;
 	}
@@ -159,8 +160,8 @@ bool Set::IsSubsetOf(Set& other) {
 }
 
 bool Set::IsDisjointWith(Set& other) {
-	int i = data.begin(), j = other.data.begin();
-	while (i != data.end() and j != other.data.end()) {
+	auto i = data.begin(), j = other.data.begin();
+	while (i != data.end() && j != other.data.end()) {
 		if (*i == *j) {
 			// same element found. add it to the intersection
 			return false;
@@ -178,4 +179,21 @@ bool Set::IsDisjointWith(Set& other) {
 		}
 	}
 	return true;
+}
+
+std::ostream& operator<<(std::ostream& os, Set& s)
+{
+	os << "{ ";
+	bool first = true;
+	for (int i : s.data) {
+		if (!first) {
+			os << ", ";
+		}
+		else {
+			first = false;
+		}
+		os << i;
+	}
+	os << " }";
+	return os;
 }
