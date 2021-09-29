@@ -21,13 +21,13 @@ public:
 	bool Insert(int x);
 	bool Delete(int x);
 
-	Set Union(Set& other);
-	Set Intersection(Set& other);
-	Set Minus(Set& other);
+	Set Union(const Set& other);
+	Set Intersection(const Set& other);
+	Set Minus(const Set& other);
 
-	bool IsSubsetOf(Set& other);
-	bool IsDisjointWith(Set& other);
+	bool IsSubsetOf(const Set& other);
+	bool IsDisjointWith(const Set& other);
 
-	friend std::ostream& operator<<(std::ostream&, Set&);
+	friend std::ostream& operator<<(std::ostream&, const Set&);
 };
 

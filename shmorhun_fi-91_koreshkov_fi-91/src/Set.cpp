@@ -37,9 +37,10 @@ bool Set::Delete(int x) {
 	return 0;
 }
 
-Set Set::Union(Set& other) {
+Set Set::Union(const Set& other) {
 	Set u = Set();
-	auto i = data.begin(), j = other.data.begin();
+	auto i = data.begin();
+	auto j = other.data.begin();
 	while (i != data.end() && j != other.data.end()) {
 		if (*i == *j) {
 			u.data.push_back(*i);
@@ -67,9 +68,10 @@ Set Set::Union(Set& other) {
 	return u;
 }
 
-Set Set::Intersection(Set& other) {
+Set Set::Intersection(const Set& other) {
 	Set cap = Set();
-	auto i = data.begin(), j = other.data.begin();
+	auto i = data.begin();
+	auto j = other.data.begin();
 	while (i != data.end() && j != other.data.end()) {
 		if (*i == *j) {
 			// same element found. add it to the intersection
@@ -101,9 +103,10 @@ Set Set::Intersection(Set& other) {
 	return cap;
 }
 
-Set Set::Minus(Set& other) {
+Set Set::Minus(const Set& other) {
 	Set r = Set();
-	auto i = data.begin(), j = other.data.begin();
+	auto i = data.begin();
+	auto j = other.data.begin();
 	while (i != data.end() && j != other.data.end()) {
 		if (*i == *j) {
 			// same element found. remove it. everything ok.
@@ -128,8 +131,9 @@ Set Set::Minus(Set& other) {
 	return r;
 }
 
-bool Set::IsSubsetOf(Set& other) {
-	auto i = data.begin(), j = other.data.begin();
+bool Set::IsSubsetOf(const Set& other) {
+	auto i = data.begin();
+	auto j = other.data.begin();
 	while (i != data.end() && j != other.data.end()) {
 		if (*i == *j) {
 			// same element found. add it to the intersection. everything ok.
@@ -159,8 +163,9 @@ bool Set::IsSubsetOf(Set& other) {
 	return true;
 }
 
-bool Set::IsDisjointWith(Set& other) {
-	auto i = data.begin(), j = other.data.begin();
+bool Set::IsDisjointWith(const Set& other) {
+	auto i = data.begin();
+	auto j = other.data.begin();
 	while (i != data.end() && j != other.data.end()) {
 		if (*i == *j) {
 			// same element found. add it to the intersection
@@ -181,7 +186,7 @@ bool Set::IsDisjointWith(Set& other) {
 	return true;
 }
 
-std::ostream& operator<<(std::ostream& os, Set& s)
+std::ostream& operator<<(std::ostream& os, const Set& s)
 {
 	os << "{ ";
 	bool first = true;
