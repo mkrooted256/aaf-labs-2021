@@ -1,14 +1,6 @@
-#include "Request.h"
+#include "Collection.h"
 
-Request::Request() {}
+void Tree::Insert(Set set_to_insert) {
+	
 
-void Request::Insert(int* collection)
-{
-	if (root != nullptr) {
-
-	}
-	else
-	{
-		std::cout << "No DB";
-	}
 }
