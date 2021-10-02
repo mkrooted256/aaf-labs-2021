@@ -4,31 +4,28 @@
 class Node
 {
 public:
-    Set set = Set();
-    std::vector<Node*> children(const static int size_chld_array = 10);
+    static const size_t DEFAULT_NODE_ARR_SIZE = 3;
+    std::vector<std::pair<Set, Node*>> sets_pointers;
     Node* parent = nullptr;
-    bool is_user_set = 0;
     
-    Node() {};
+    Node() {
+        sets_pointers = std::vector<std::pair<Set, Node*>> (DEFAULT_NODE_ARR_SIZE);
+    };
     
-    Node(Set set_to_in, Node* choose_parent, bool is_it_users) {
-        this->set = set_to_in;
-        this->parent = choose_parent;
-        this->is_user_set = is_it_users;
-    }
+    void Insert(Set& set);
+    int IndexOfChildVector(std::vector<std::pair<Set, Node*>>& node_vec, Node* node);
+    Set UnionNodeSets(std::vector<std::pair<Set, Node*>>& vector_to_union);
+    std::pair<int, int> HaveEmptySpace(std::vector<std::pair<Set, Node*>> vector_to_check);
+    std::pair<int,int> GetMinimumSetSizeAndIndex(std::vector<std::pair<Set, Node*>>& set_vec);
+    std::pair<int, int> ShortestSubTree(std::vector<std::pair<Set, Node*>>);
+
 };
 
 class Tree
 {
 public:
     
-    Node* root;
+    Node root;
+    Tree() { root = Node(); };
 
-    Tree(Set first_set) {
-        root = new Node(first_set, nullptr, 1);
-        Insert(root->set);
-    };
-
-    Tree() { root = new Node(); };
-    void Insert(Set set_to_insert);
 };

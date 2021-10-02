@@ -8,6 +8,7 @@
 class Set {
 public:
 	static const size_t DEFAULT_SZ = 8;
+	bool is_user_set = 0;
 	std::vector<int> data;
 
 	Set(std::vector<int> _data) {

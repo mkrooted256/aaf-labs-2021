@@ -7,10 +7,13 @@ using namespace std;
 
 int main() {
 
-	Set b = Set({ 1,7,3,5,2,9,8 });
-	Set a = Set({ 1,3 });
+	//Tree first_tree = Tree();
+	//cout << first_tree.root.sets[0];
 
-	
+	Set set;
+
+	cout << set.data.capacity();
+	getchar();
 	return 0;
 	
 }
