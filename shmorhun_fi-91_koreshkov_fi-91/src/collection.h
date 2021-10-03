@@ -13,19 +13,20 @@ public:
     };
     
     void Insert(Set& set);
+    
     int IndexOfChildVector(std::vector<std::pair<Set, Node*>>& node_vec, Node* node);
     Set UnionNodeSets(std::vector<std::pair<Set, Node*>>& vector_to_union);
     std::pair<int, int> HaveEmptySpace(std::vector<std::pair<Set, Node*>> vector_to_check);
     std::pair<int,int> GetMinimumSetSizeAndIndex(std::vector<std::pair<Set, Node*>>& set_vec);
     std::pair<int, int> ShortestSubTree(std::vector<std::pair<Set, Node*>>);
-
 };
 
-class Tree
+class Tree : Node
 {
 public:
     
     Node root;
     Tree() { root = Node(); };
+
 
 };
