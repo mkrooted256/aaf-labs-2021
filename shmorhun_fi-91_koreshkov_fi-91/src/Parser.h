@@ -39,17 +39,29 @@ size_t strffind(bool (*filter)(char), std::string str) {
 	return std::string::npos;
 }
 
-Set parse_set(
+struct parse_set_result {
+	Set set;
+	bool parsed;
+	std::vector<std::string>::iterator end;
+
+	static parse_set_result error() {
+		parse_set_result r;
+		r.parsed = false;
+		return r;
+	}
+};
+
+parse_set_result parse_set(
 	std::vector<std::string>::iterator begin, 
 	std::vector<std::string>::iterator end) {
-	Set set;
+	parse_set_result r{ Set(), true, end };
 
 	
 	auto i = begin;
 	for (; i != end; i++) {
 		if (*i == "{") break;
 	}
-	if (i == end) return set;
+	if (i == end) return parse_set_result::error();
 	// no set at all
 	i++;
 
@@ -65,26 +77,27 @@ Set parse_set(
 				val = strtol((*i).c_str(), nullptr, 10);
 				if (val == 0) {
 					// Invalid syntax. Return empty set.
-					return Set();
+					return parse_set_result::error();
 				}
 			}
-			set.Insert(val);
+			r.set.Insert(val);
 			state = COMMA;
 		}
 		else {
 			if (*i != ",") {
 				// Invalid syntax. Return empty set.
-				return Set();
+				return parse_set_result::error();
 			}
 			state = VAL;
 		}
 	}
 	if (state != END) {
 		// Invalid syntax. Return empty set.
-		return Set();
+		return parse_set_result::error();
 	}
+	r.end = i;
 
-	return set;
+	return r;
 }
 
 bool is_in(char c, const char* str) {
@@ -96,20 +109,41 @@ bool is_in(char c, const char* str) {
 	return false;
 }
 
-class Request {
+std::string toupper(const std::string& str) {
+	std::string upper;
+	for (char c : str) {
+		upper += toupper(c);
+	}
+	return upper;
+}
+
+const std::vector<std::string> KEYWOARDS = { "CREATE", "INSERT", "SEARCH", "WHERE", "INTERSECTS", "CONTAINS", "CONTAINED_BY" };
+
+class RequestParser {
 public:
 	static const int CMD_UNPARSED = -1;
 	static const int CMD_CREATE = 10;
 	static const int CMD_INSERT = 20;
 	static const int CMD_SEARCH = 30;
 	static const int CMD_SEARCH_WHERE = 40;
+	static const int CMD_CONTAINS = 50;
 
 	static const int FILTER_INTERSECTS = 100;
 	static const int FILTER_SUBSET = 200;
 	static const int FILTER_SUPERSET = 300;
+	
+
+	static bool is_keyword(std::string str) {
+		str = toupper(str);
+		for (const std::string& kw : KEYWOARDS) {
+			if (str == kw) return true;
+		}
+		return false;
+	}
+
 
 private:
-	Request() : command(CMD_UNPARSED), filter(0) {};
+	RequestParser() : command(CMD_UNPARSED), filter(0) {};
 
 public:
 
@@ -120,8 +154,8 @@ public:
 
 	std::string parse_error;
 
-	static Request parse(std::string str) {
-		Request req;
+	static RequestParser parse(std::string str) {
+		RequestParser req;
 		const char* ws = " \n\r\t\v\f";
 		const char* delims = "{,}";
 		
@@ -132,19 +166,27 @@ public:
 		size_t pos = start;
 		size_t token_start = start;
 		while (pos < end) {
+			bool on_start = token_start == pos;
 			if (str[pos] == ';') {
-				tokens.push_back(str.substr(token_start, pos - token_start));
+				if (!on_start) {
+					tokens.push_back(str.substr(token_start, pos - token_start));
+				}
 				break;
 			}
+			
 			if (is_in(str[pos], delims)) {
-				if (pos != token_start) {
+				if (!on_start) {
+					if (str[pos] == '{') {
+						req.parse_error = "invalid syntax: unexpected '{'";
+						return req;
+					}
 					tokens.push_back(str.substr(token_start, pos - token_start));
 				}
 				tokens.push_back(str.substr(pos, 1));
 				token_start = pos = pos+1;
-			} 
+			}
 			if (is_in(str[pos], ws)) {
-				if (token_start != pos) {
+				if (!on_start) {
 					tokens.push_back(str.substr(token_start, pos - token_start));
 				}
 				token_start = pos = str.find_first_not_of(ws, pos);
@@ -163,10 +205,7 @@ public:
 		// token[0] is a command.
 		// make cmd uppercase
 		auto i_tok = tokens.begin();
-		std::string cmd = *i_tok;
-		for (auto i = cmd.begin(); i != cmd.end(); i++) {
-			*i = toupper(*i);
-		}
+		std::string cmd = toupper(*i_tok);
 
 		if (cmd == "CREATE") {
 			req.command = CMD_CREATE;
@@ -178,7 +217,26 @@ public:
 			i_tok++;
 			req.target = *i_tok;
 			i_tok++;
-			req.payload = parse_set(i_tok, tokens.end());
+			auto ps = parse_set(i_tok, tokens.end());
+			if (!ps.parsed) {
+				req.parse_error = "invalid syntax: cannot parse Set";
+				return req;
+			}
+			req.payload = ps.set;
+			i_tok = ps.end;
+		}
+		else if (cmd == "CONTAINS") {
+			req.command = CMD_CONTAINS;
+			i_tok++;
+			req.target = *i_tok;
+			i_tok++;
+			auto ps = parse_set(i_tok, tokens.end());
+			if (!ps.parsed) {
+				req.parse_error = "invalid syntax: cannot parse Set";
+				return req;
+			}
+			req.payload = ps.set;
+			i_tok = ps.end;
 		}
 		else if (cmd == "SEARCH") {
 			i_tok++;
@@ -197,10 +255,7 @@ public:
 				return req;
 			}
 
-			std::string filter = *i_tok;
-			for (auto i = filter.begin(); i != filter.end(); i++) {
-				*i = toupper(*i);
-			}
+			std::string filter = toupper(*i_tok);
 			if (filter == "INTERSECTS") {
 				req.filter = FILTER_INTERSECTS;
 			} 
@@ -218,37 +273,63 @@ public:
 			req.command = CMD_SEARCH_WHERE;
 
 			i_tok++;
-			
-			req.payload = parse_set(i_tok, tokens.end());
+
+			auto ps = parse_set(i_tok, tokens.end());
+			if (!ps.parsed) {
+				req.parse_error = "invalid syntax: cannot parse Set";
+				return req;
+			}
+			req.payload = ps.set;
+			i_tok = ps.end;
+		}
+		else {
+			req.parse_error = "unknown command";
+			return req;
+		}
+		i_tok++;
+		if (i_tok != tokens.end()) {
+			req.parse_error = "invalid syntax: extra tokens after the end of command";
+		}
+		if (is_keyword(req.target)) {
+			req.parse_error = "invalid target: target cannot be a keyword";
 		}
 		return req;
 	}
 
-	friend std::ostream& operator<<(std::ostream& os, const Request& req) {
-		os << "Request [";
-		if (req.command == Request::CMD_CREATE) {
+	friend std::ostream& operator<<(std::ostream& os, const RequestParser& req) {
+		if (!req.parse_error.empty()) {
+			os << "RequestParseError {" << std::endl << "  " << req.parse_error << std::endl << "}";
+			return os;
+		}
+		os << "Request {" << std::endl << "  command: ";
+		if (req.command == RequestParser::CMD_CREATE) {
 			os << "CREATE";
 		}
-		else if (req.command == Request::CMD_INSERT) {
+		else if (req.command == RequestParser::CMD_INSERT) {
 			os << "INSERT";
 		}
-		else if (req.command == Request::CMD_SEARCH) {
+		else if (req.command == RequestParser::CMD_CONTAINS) {
+			os << "CONTAINS";
+		}
+		else if (req.command == RequestParser::CMD_SEARCH) {
 			os << "SEARCH";
 		}
-		else if (req.command == Request::CMD_SEARCH_WHERE) {
+		else if (req.command == RequestParser::CMD_SEARCH_WHERE) {
 			os << "SEARCH_WHERE";
 		}
-		else if (req.command == Request::CMD_UNPARSED) {
+		else if (req.command == RequestParser::CMD_UNPARSED) {
 			os << "unparsed";
 		}
-		os << "] '" << req.target << "' - {" << req.payload << "} | ";
-		if (req.filter == Request::FILTER_INTERSECTS) {
+		os << std::endl << "  target: '";
+		os << req.target << "'" << std::endl << "  payload: " << req.payload << std::endl << "  filter: ";
+		if (req.filter == RequestParser::FILTER_INTERSECTS) {
 			os << "(intersects)";
-		} else if (req.filter == Request::FILTER_SUBSET) {
+		} else if (req.filter == RequestParser::FILTER_SUBSET) {
 			os << "(subset)";
-		} else if (req.filter == Request::FILTER_SUPERSET) {
+		} else if (req.filter == RequestParser::FILTER_SUPERSET) {
 			os << "(superset)";
 		}
+		os << std::endl << "}" << std::endl;
 		return os;
 	}
 };
