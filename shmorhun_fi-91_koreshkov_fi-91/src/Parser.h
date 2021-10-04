@@ -108,7 +108,7 @@ public:
 	static const int FILTER_SUBSET = 200;
 	static const int FILTER_SUPERSET = 300;
 
-private:
+public:
 	Request() : command(CMD_UNPARSED), filter(0) {};
 
 public:
