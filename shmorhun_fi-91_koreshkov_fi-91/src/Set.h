@@ -8,7 +8,6 @@
 class Set {
 public:
 	static const size_t DEFAULT_SZ = 8;
-	bool is_user_set = 0;
 	std::vector<int> data;
 
 	Set(std::vector<int> _data) {
@@ -18,16 +17,18 @@ public:
 	}
 	Set() {}
 
-	bool Contains(int x);
+	size_t Size() const { return data.size(); }
+
+	bool Contains(int x) const;
 	bool Insert(int x);
 	bool Delete(int x);
 
-	Set Union(const Set& other);
-	Set Intersection(const Set& other);
-	Set Minus(const Set& other);
+	Set Union(const Set& other) const;
+	Set Intersection(const Set& other) const;
+	Set Minus(const Set& other) const;
 
-	bool IsSubsetOf(const Set& other);
-	bool IsDisjointWith(const Set& other);
+	bool IsSubsetOf(const Set& other) const;
+	bool IsDisjointWith(const Set& other) const;
 
 	friend std::ostream& operator<<(std::ostream&, const Set&);
 };

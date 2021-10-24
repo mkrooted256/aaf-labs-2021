@@ -1,7 +1,7 @@
 #include "Set.h"
 
 
-bool Set::Contains(int x)
+bool Set::Contains(int x) const
 {
 	return std::binary_search(data.begin(), data.end(), x);
 }
@@ -37,7 +37,7 @@ bool Set::Delete(int x) {
 	return 0;
 }
 
-Set Set::Union(const Set& other) {
+Set Set::Union(const Set& other) const {
 	Set u = Set();
 	auto i = data.begin();
 	auto j = other.data.begin();
@@ -68,7 +68,7 @@ Set Set::Union(const Set& other) {
 	return u;
 }
 
-Set Set::Intersection(const Set& other) {
+Set Set::Intersection(const Set& other) const {
 	Set cap = Set();
 	auto i = data.begin();
 	auto j = other.data.begin();
@@ -103,7 +103,7 @@ Set Set::Intersection(const Set& other) {
 	return cap;
 }
 
-Set Set::Minus(const Set& other) {
+Set Set::Minus(const Set& other) const {
 	Set r = Set();
 	auto i = data.begin();
 	auto j = other.data.begin();
@@ -131,7 +131,7 @@ Set Set::Minus(const Set& other) {
 	return r;
 }
 
-bool Set::IsSubsetOf(const Set& other) {
+bool Set::IsSubsetOf(const Set& other) const {
 	auto i = data.begin();
 	auto j = other.data.begin();
 	while (i != data.end() && j != other.data.end()) {
@@ -163,7 +163,7 @@ bool Set::IsSubsetOf(const Set& other) {
 	return true;
 }
 
-bool Set::IsDisjointWith(const Set& other) {
+bool Set::IsDisjointWith(const Set& other) const {
 	auto i = data.begin();
 	auto j = other.data.begin();
 	while (i != data.end() && j != other.data.end()) {
