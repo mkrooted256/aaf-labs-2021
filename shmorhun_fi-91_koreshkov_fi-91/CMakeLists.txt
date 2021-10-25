@@ -6,7 +6,7 @@ project(aalab)
 
 # add the executable
 
-add_executable(aalab src/main.cpp "src/Set.h" "src/Set.cpp" "src/Parser.h", "src/Collection.h", "src/Collection.cpp")
+add_executable(aalab src/main.cpp "src/Set.h" "src/Set.cpp" "src/Parser.h" "src/Collection.h" "src/Collection.cpp")
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)

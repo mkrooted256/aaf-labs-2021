@@ -15,18 +15,20 @@ public:
     Node(Node * _parent, const Set& set) : parent(_parent), subnodes{}, set(set), is_real(true) { };
     
     Node * Insert(const Set& new_set);
+    void ExpandTo(const Set& to_set);
+    Node* InsertSubset(const Set& new_set);
 
 protected:
-    Node* InsertSubset(const Set& new_set);
-    void ExpandTo(const Set& to_set);
 
     unsigned int subset_test(const Set& set) const;
     unsigned int superset_test(const Set& set) const;
 };
 
-class Collection : public Node
+class Collection
 {
+    Node* root;
 public:
-    Collection() : Node(nullptr) {};
-    void Print();
+    Collection() : root(nullptr) {};
+    void Print(std::ostream& os) const;
+    Node* Insert(const Set& new_set);
 };

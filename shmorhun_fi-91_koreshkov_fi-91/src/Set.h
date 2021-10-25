@@ -31,5 +31,8 @@ public:
 	bool IsDisjointWith(const Set& other) const;
 
 	friend std::ostream& operator<<(std::ostream&, const Set&);
+	friend bool operator== (const Set& lhs, const Set& rhs) {
+		return lhs.data == rhs.data;
+	}
 };
 

@@ -1,26 +1,79 @@
 #include "Collection.h"
+#include <stack>
+
+Node* Collection::Insert(const Set& new_set) {
+    if (!root) return root = new Node(nullptr, new_set);
+    return root->Insert(new_set);
+}
+
+void Collection::Print(std::ostream& os) const {
+    if (!root) {
+        os << "Empty Collection";
+        return;
+    }
+
+    std::stack<Node*> nodes;
+    std::stack<unsigned int> lvls;
+
+    nodes.push(root->subnodes[1]);
+    lvls.push(1);
+    nodes.push(root->subnodes[0]);
+    lvls.push(1);
+
+
+    os << root->set;
+    if (root->is_real) os << "*";
+    os << std::endl;
+
+    while (!nodes.empty()) {
+        Node* next = nodes.top();
+        nodes.pop();
+        unsigned int depth = lvls.top();
+        lvls.pop();
+
+        if (next != nullptr) {
+            // Indent
+            for (unsigned int i = 0; i < depth-1; i++) {
+                os << "|   ";
+            }
+            os << "+-- " << next->set;
+            if (next->is_real) os << "*";
+            os << std::endl;
+
+            nodes.push(next->subnodes[1]);
+            lvls.push(depth+1);
+            nodes.push(next->subnodes[0]);
+            lvls.push(depth+1);
+        }
+    }
+}
+
+
+
 
 void Node::ExpandTo(const Set& to_set) {
     set = set.Union(to_set);
 }
 
 Node* Node::Insert(const Set& new_set) {
-    ExpandTo(new_set);
-    return InsertSubset(new_set);
-}
-
-Node* Node::InsertSubset(const Set& new_set) {   
-    /* 
-    Check if new_set == set;
-        We know that [new_set <= set]. 
-        So [|new_set| == |set|] implies [new_set == set] 
-    */
-    if (new_set.Size() == set.Size()) {
+    if (new_set == set) {
         is_real = true;
         return this;
     }
 
+    Set orig_set = set;
+    ExpandTo(new_set);
+    if (!is_real || orig_set.Size() == set.Size()) {
+        // No expansion and/or no need to save orig_set
+    }
+    else {
+        is_real = false;
+        InsertSubset(orig_set);
+    }
+    return InsertSubset(new_set);
+}
 
+Node* Node::InsertSubset(const Set& new_set) {   
     // Step 0: check if Node is empty.
 
     if (subnodes[0] == nullptr) {
@@ -86,7 +139,7 @@ Node* Node::InsertSubset(const Set& new_set) {
             +-- new_node(new_set) 
                 +-- node[1]
                 +-- node[2]  
-            +-- nullptr
+            +-- 
         +-- other
         */
         
@@ -129,7 +182,7 @@ Node* Node::InsertSubset(const Set& new_set) {
     } else {
         argmin_i = 1;
     }
-    // We use `Insert` instead of `ExpandTo`-`InsertSubset` combination because __Occam's razor✨__
+
     return subnodes[argmin_i]->Insert(new_set);
 }
 
