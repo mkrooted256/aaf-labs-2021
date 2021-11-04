@@ -38,20 +38,6 @@ static const int FILTER_SUPERSET = 300;
 
 class Request {
 public:
-	struct Result {
-		bool error;
-		std::vector<Set> data;
-		std::string msg;
-
-		Result() : error(false) {}
-
-		static Result Error(const std::string& msg) {
-			Result res;
-			res.error = true;
-			res.msg = msg;
-		}
-	};
-
 	int command;
 	std::string target;
 	Set payload;
