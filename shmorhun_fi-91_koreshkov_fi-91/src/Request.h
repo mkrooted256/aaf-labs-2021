@@ -38,6 +38,7 @@ static const int FILTER_SUPERSET = 300;
 
 class Request {
 public:
+
 	int command;
 	std::string target;
 	Set payload;
@@ -47,6 +48,8 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& os, const Request& req) {
+	if (!(req.command == CMD_UNPARSED))
+	{
 	os << "Request {" << std::endl << "  command: ";
 	if (req.command == CMD_CREATE) {
 		os << "CREATE";
@@ -63,20 +66,29 @@ std::ostream& operator<<(std::ostream& os, const Request& req) {
 	else if (req.command == CMD_SEARCH_WHERE) {
 		os << "SEARCH_WHERE";
 	}
-	else if (req.command == CMD_UNPARSED) {
-		os << "unparsed";
+	//else if (req.command == CMD_UNPARSED) {
+	//	os << "unparsed";
+	//}
+
+		os << std::endl << "  target: '";
+			os << req.target << "'" << std::endl << "  payload: " << req.payload << std::endl << "  filter: ";
+			if (req.filter == FILTER_INTERSECTS) {
+				os << "(intersects)";
+			}
+			else if (req.filter == FILTER_SUBSET) {
+				os << "(subset)";
+			}
+			else if (req.filter == FILTER_SUPERSET) {
+				os << "(superset)";
+			}
+		os << std::endl << "}" << std::endl;
+		return os;
+		 
 	}
-	os << std::endl << "  target: '";
-	os << req.target << "'" << std::endl << "  payload: " << req.payload << std::endl << "  filter: ";
-	if (req.filter == FILTER_INTERSECTS) {
-		os << "(intersects)";
+	else
+	{
+		os << "command unparsed.";
+		return os;
 	}
-	else if (req.filter == FILTER_SUBSET) {
-		os << "(subset)";
-	}
-	else if (req.filter == FILTER_SUPERSET) {
-		os << "(superset)";
-	}
-	os << std::endl << "}" << std::endl;
-	return os;
+
 }

@@ -23,9 +23,10 @@ class RequestParser {
 		Set set;
 		bool parsed;
 		std::vector<std::string>::iterator end;
-
-		static parse_set_result error() {
+		std::string ms;
+		static parse_set_result error(const std::string& err_msg) {
 			parse_set_result r;
+		    r.ms = err_msg;
 			r.parsed = false;
 			return r;
 		}
@@ -40,8 +41,8 @@ class RequestParser {
 		for (; i != end; i++) {
 			if (*i == "{") break;
 		}
-		if (i == end) return parse_set_result::error();
-		// no set at all
+		if (i == end) return parse_set_result::error("No set at all");
+
 		i++;
 
 		enum { VAL, COMMA, END } state = VAL;
@@ -53,26 +54,33 @@ class RequestParser {
 			if (state == VAL) {
 				int val = 0;
 				if ((*i)[0] != '0') {
+				    
+					for (int j = 0;  j < (*i).size(); j++)
+					{
+						if (!isdigit((*i)[j]))
+						{
+
+							return parse_set_result::error("Invalid syntax (Invalid number). Return empty set");
+						}
+					}
 					val = strtol((*i).c_str(), nullptr, 10);
 					if (val == 0) {
-						// Invalid syntax. Return empty set.
-						return parse_set_result::error();
+
+						return parse_set_result::error("Invalid syntax (Invalid symbol instead of number). Return empty set");
 					}
 				}
 				r.set.Insert(val);
 				state = COMMA;
 			}
 			else {
-				if (*i != ",") {
-					// Invalid syntax. Return empty set.
-					return parse_set_result::error();
+				if ((*i)[0] != ',') {
+					return parse_set_result::error("Invalid syntax (Invalid symbols in the input). Return empty set");
 				}
 				state = VAL;
 			}
 		}
 		if (state != END) {
-			// Invalid syntax. Return empty set.
-			return parse_set_result::error();
+			return parse_set_result::error("Invalid syntax (Other symbols after `}` symbol).Return empty set");
 		}
 		r.end = i;
 
@@ -159,6 +167,7 @@ public:
 		auto i_tok = tokens.begin();
 		std::string cmd = toupper(*i_tok);
 
+
 		if (cmd == "CREATE") {
 			req.command = CMD_CREATE;
 			i_tok++;
@@ -171,7 +180,8 @@ public:
 			i_tok++;
 			auto ps = parse_set(i_tok, tokens.end());
 			if (!ps.parsed) {
-				parse_error = "invalid syntax: cannot parse Set";
+				req.command = CMD_UNPARSED;
+				parse_error = "invalid syntax: cannot parse Set " + ps.ms;
 				return req;
 			}
 			req.payload = ps.set;
@@ -184,7 +194,8 @@ public:
 			i_tok++;
 			auto ps = parse_set(i_tok, tokens.end());
 			if (!ps.parsed) {
-				parse_error = "invalid syntax: cannot parse Set";
+				parse_error = "invalid syntax: cannot parse Set " + ps.ms;
+				req.command = CMD_UNPARSED;
 				return req;
 			}
 			req.payload = ps.set;
@@ -228,22 +239,28 @@ public:
 
 			auto ps = parse_set(i_tok, tokens.end());
 			if (!ps.parsed) {
-				parse_error = "invalid syntax: cannot parse Set";
+				req.command = CMD_UNPARSED;
+				parse_error = "invalid syntax: cannot parse Set " + ps.ms;
 				return req;
 			}
 			req.payload = ps.set;
 			i_tok = ps.end;
 		}
 		else {
+			req.command = CMD_UNPARSED;
 			parse_error = "unknown command";
 			return req;
 		}
 		i_tok++;
 		if (i_tok != tokens.end()) {
+			req.command = CMD_UNPARSED;
 			parse_error = "invalid syntax: extra tokens after the end of command";
+			return req;
 		}
 		if (is_keyword(req.target)) {
+			req.command = CMD_UNPARSED;
 			parse_error = "invalid target: target cannot be a keyword";
+			return req;
 		}
 		return req;
 	}
