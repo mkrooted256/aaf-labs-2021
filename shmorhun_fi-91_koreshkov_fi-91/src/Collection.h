@@ -27,6 +27,9 @@ protected:
 class Collection
 {
     Node* root;
+
+    void PrintSubtree(std::ostream& os, Node* node, std::string prefix, std::string) const;
+
 public:
     Collection() : root(nullptr) {};
     void Print(std::ostream& os) const;

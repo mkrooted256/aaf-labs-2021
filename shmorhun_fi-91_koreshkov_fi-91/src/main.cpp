@@ -8,6 +8,8 @@ using namespace std;
 
 int main() {
 
+
+
 	Collection C;
 
 	C.Print(std::cout);

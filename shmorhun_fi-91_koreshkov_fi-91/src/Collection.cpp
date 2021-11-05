@@ -1,9 +1,20 @@
-#include "Collection.h"
+﻿#include "Collection.h"
 #include <stack>
 
 Node* Collection::Insert(const Set& new_set) {
     if (!root) return root = new Node(nullptr, new_set);
     return root->Insert(new_set);
+}
+
+
+void Collection::PrintSubtree(std::ostream& os, Node* subtree_root, std::string prefix, std::string children_prefix) const {
+    if (subtree_root == nullptr) {
+        return;
+    }
+    os << prefix << subtree_root->set << std::endl;
+
+    PrintSubtree(os, subtree_root->subnodes[0], children_prefix + "L-- ", children_prefix + "|   ");
+    PrintSubtree(os, subtree_root->subnodes[1], children_prefix + "L-- ", children_prefix + "    ");
 }
 
 void Collection::Print(std::ostream& os) const {
@@ -12,40 +23,8 @@ void Collection::Print(std::ostream& os) const {
         return;
     }
 
-    std::stack<Node*> nodes;
-    std::stack<unsigned int> lvls;
+    PrintSubtree(os, root, "", "");
 
-    nodes.push(root->subnodes[1]);
-    lvls.push(1);
-    nodes.push(root->subnodes[0]);
-    lvls.push(1);
-
-
-    os << root->set;
-    if (root->is_real) os << "*";
-    os << std::endl;
-
-    while (!nodes.empty()) {
-        Node* next = nodes.top();
-        nodes.pop();
-        unsigned int depth = lvls.top();
-        lvls.pop();
-
-        if (next != nullptr) {
-            // Indent
-            for (unsigned int i = 0; i < depth-1; i++) {
-                os << "|   ";
-            }
-            os << "+-- " << next->set;
-            if (next->is_real) os << "*";
-            os << std::endl;
-
-            nodes.push(next->subnodes[1]);
-            lvls.push(depth+1);
-            nodes.push(next->subnodes[0]);
-            lvls.push(depth+1);
-        }
-    }
 }
 
 
