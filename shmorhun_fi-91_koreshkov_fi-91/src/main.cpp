@@ -8,9 +8,9 @@ using namespace std;
 
 int main() {
 
-	//Collection C;
+	Collection C;
 
-	//C.Print(std::cout);
+	C.Print(std::cout);
 
 
 	//do
@@ -33,12 +33,12 @@ int main() {
 	//} while (true);
 
 
-	//
-	//std::cout << "\n**************** + { 0,10,20 } ***********************" << std::endl;
+	
+	std::cout << "\n**************** + { 0,10,20 } ***********************" << std::endl;
 
-	//// Basic 
-	//C.Insert(Set({ 0,10,20 }));
-	//C.Print(std::cout);
+	// Basic 
+	C.Insert(Set({ 0,10,20 }));
+	C.Print(std::cout);
 
 	//std::cout << "\n****************** + { 30,40 } *****************" << std::endl;
 
@@ -72,19 +72,19 @@ int main() {
 
 	//std::cout << "\n****************************************************" << std::endl;
 
-	RequestParser prs;
-	std::string input; //= "SEARCH table_1 WHERE INTERSECTS { 1, 2,3, 4  ,  5}";
-	while (input != "exit") {
-		std::cout << "> ";
-		input = "";
-		std::getline(cin, input, ';');
-	
-		input += ';';
-		prs.parse(input);	
-		std::cout << std::endl;
-		std::cout << "< " << prs.parse(input) << std::endl << std::endl;
-		std::cout << "< " << prs.parse_error << std::endl << std::endl;
-	}
+	//RequestParser prs;
+	//std::string input; //= "SEARCH table_1 WHERE INTERSECTS { 1, 2,3, 4  ,  5}";
+	//while (input != "exit") {
+	//	std::cout << "> ";
+	//	input = "";
+	//	std::getline(cin, input, ';');
+	//
+	//	input += ';';
+	//	prs.parse(input);	
+	//	std::cout << std::endl;
+	//	std::cout << "< " << prs.parse(input) << std::endl << std::endl;
+	//	std::cout << "< " << prs.parse_error << std::endl << std::endl;
+	//}
 
 
 
