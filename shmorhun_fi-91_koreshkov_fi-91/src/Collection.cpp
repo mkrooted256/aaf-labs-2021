@@ -64,7 +64,7 @@ void Node::Insert(const Set& new_set) {
         subnodes[1] = new Node(this, new_set);
         return;
     }
-
+    this->ExpandTo(new_set);
     // Step 1: find MIN{new_set \ subnode[i]}
     //    It will show, how much do we need to expand a node to fit the set in it
 
@@ -92,9 +92,7 @@ void Node::Insert(const Set& new_set) {
         subnodes[1]->Insert(new_set);
         return;
     }
-
-
-
+    
     // Step 3: General insert
 
     if (complement_sizes[0] <= complement_sizes[1]) {
@@ -106,34 +104,6 @@ void Node::Insert(const Set& new_set) {
     subnodes[argmin_i]->Insert(new_set);
     return;
 }
-
-
-
-
-
-//void Node::InsertNotUsers(const Set& old_set) {
-//    short argmin_i;
-//    Set complements[2] = {
-//       old_set.Minus(subnodes[0]->set),
-//       (subnodes[1] != nullptr) ? old_set.Minus(subnodes[1]->set) : Set(),
-//    };
-//    size_t complement_sizes[2] = {
-//        complements[0].Size(),
-//        complements[1].Size()
-//    };
-//    if (complement_sizes[0] <= complement_sizes[1]) {
-//        argmin_i = 0;
-//    }
-//    else {
-//        argmin_i = 1;
-//    }
-//
-//    return;
-//}
-
-
-
-
 
     /* Returns a bitmask of subnodes, where `set` does fit:
     *    0 = 00b -  No subnode is a SUPERSET of `set`
