@@ -9,7 +9,6 @@ class Set {
 public:
 	static const size_t DEFAULT_SZ = 8;
 	std::vector<int> data;
-	bool is_real = true;
 	Set(std::vector<int> _data) {
 		std::sort(_data.begin(), _data.end());
 		auto last = std::unique(_data.begin(), _data.end());
