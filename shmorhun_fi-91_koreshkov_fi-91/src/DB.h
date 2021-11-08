@@ -17,14 +17,14 @@ public:
 			Result res;
 			res.error = true;
 			res.msg = msg;
+			return res;
 		}
 		static Result Success(const std::string& msg) {
 			Result res;
 			res.error = false;
 			res.msg = msg;
+			return res;
 		}
-
-		static const Result ERR_UNIMPLEMENTED = Error("Unimplemented");
 
 	};
 
@@ -35,8 +35,11 @@ private:
 public:
 
 	Result Create(std::string collection_name) {
-		const auto [it, collectionCreated] = collections.try_emplace(collection_name);
+		const auto pair = collections.try_emplace(collection_name);
 		
+		const auto it = pair.first;
+		const auto collectionCreated = pair.second;
+
 		if (!collectionCreated) {
 			std::string msg = "Collection '" + collection_name + "' already exists";
 			return Result::Error(msg);
@@ -71,7 +74,7 @@ public:
 			it->second.Insert(insert_set);
 		}
 
-		return Result::Success(std::to_string(insert_sets.size) + " sets inserted.");
+		return Result::Success(std::to_string(insert_sets.size()) + " sets inserted.");
 	}
 
 	Result PrintTree(std::string collection_name, std::ostream& os) {
@@ -87,4 +90,5 @@ public:
 		return Result::Success("");
 	}
 
+	const std::map<const std::string, Collection>& GetCollections() const { return collections; }
 };
