@@ -43,6 +43,12 @@ int main() {
 
 	std::cout << "\n****************************************************" << std::endl;
 
+	C.Insert(Set({ 10 }));
+	C.Print(std::cout);
+
+	C.Insert(Set({ 10 }));
+	C.Print(std::cout);
+
 	//RequestParser prs;
 	//std::string input; //= "SEARCH table_1 WHERE INTERSECTS { 1, 2,3, 4  ,  5}";
 	//while (input != "exit") {

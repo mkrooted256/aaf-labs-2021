@@ -17,7 +17,6 @@ public:
 
     void Insert(const Set& new_set);
     void ExpandTo(const Set& to_set);
-    void InsertNotUsers(const Set& old_set);
     void InsertSubset(const Set& new_set);
 
 
