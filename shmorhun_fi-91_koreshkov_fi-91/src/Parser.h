@@ -115,6 +115,7 @@ public:
 	std::string parse_error;
 
 	Request parse(std::string str) {
+		parse_error = "";
 		Request req;
 		const char* ws = " \n\r\t\v\f";
 		const char* delims = "{,}";
@@ -155,9 +156,12 @@ public:
 				pos++;
 			}
 		}
+		if (token_start != pos && token_start < end) {
+			tokens.push_back(str.substr(token_start, pos - token_start));
+		}
 		
 		if (tokens.size() < 2) {
-			req.command = CMD_UNPARSED;
+			req.command = Request::CMD_UNPARSED;
 			parse_error = "too few tokens; parse aborted.";
 			return req;
 		}
@@ -168,19 +172,24 @@ public:
 		std::string cmd = toupper(*i_tok);
 
 
-		if (cmd == "CREATE") {
-			req.command = CMD_CREATE;
+		if (cmd == "PRINT") {
+			req.command = Request::CMD_PRINT;
+			i_tok++;
+			req.target = *i_tok;
+		}
+		else if (cmd == "CREATE") {
+			req.command = Request::CMD_CREATE;
 			i_tok++;
 			req.target = *i_tok;
 		}
 		else if (cmd == "INSERT") {
-			req.command = CMD_INSERT;
+			req.command = Request::CMD_INSERT;
 			i_tok++;
 			req.target = *i_tok;
 			i_tok++;
 			auto ps = parse_set(i_tok, tokens.end());
 			if (!ps.parsed) {
-				req.command = CMD_UNPARSED;
+				req.command = Request::CMD_UNPARSED;
 				parse_error = "invalid syntax: cannot parse Set " + ps.ms;
 				return req;
 			}
@@ -188,14 +197,14 @@ public:
 			i_tok = ps.end;
 		}
 		else if (cmd == "CONTAINS") {
-			req.command = CMD_CONTAINS;
+			req.command = Request::CMD_CONTAINS;
 			i_tok++;
 			req.target = *i_tok;
 			i_tok++;
 			auto ps = parse_set(i_tok, tokens.end());
 			if (!ps.parsed) {
 				parse_error = "invalid syntax: cannot parse Set " + ps.ms;
-				req.command = CMD_UNPARSED;
+				req.command = Request::CMD_UNPARSED;
 				return req;
 			}
 			req.payload = ps.set;
@@ -207,39 +216,39 @@ public:
 			i_tok++;
 			if (i_tok == tokens.end()) {
 				// select whole collection
-				req.command = CMD_SEARCH;
+				req.command = Request::CMD_SEARCH;
 				return req;
 			}
 			// Skip validation of "WHERE" because i do not care
 			i_tok++;
 			if (i_tok == tokens.end()) {
-				req.command = CMD_UNPARSED;
+				req.command = Request::CMD_UNPARSED;
 				parse_error = "invalid syntax: SEARCH WHERE command has no filter.";
 				return req;
 			}
 
 			std::string filter = toupper(*i_tok);
 			if (filter == "INTERSECTS") {
-				req.filter = FILTER_INTERSECTS;
+				req.filter = Request::FILTER_INTERSECTS;
 			} 
 			else if (filter == "CONTAINS") {
-				req.filter = FILTER_SUPERSET;
+				req.filter = Request::FILTER_SUPERSET;
 			}
 			else if (filter == "CONTAINED_BY") {
-				req.filter = FILTER_SUBSET;
+				req.filter = Request::FILTER_SUBSET;
 			}
 			else {
-				req.command = CMD_UNPARSED;
+				req.command = Request::CMD_UNPARSED;
 				parse_error = "invalid syntax: SEARCH WHERE command has invalid filter.";
 				return req;
 			}
-			req.command = CMD_SEARCH_WHERE;
+			req.command = Request::CMD_SEARCH_WHERE;
 
 			i_tok++;
 
 			auto ps = parse_set(i_tok, tokens.end());
 			if (!ps.parsed) {
-				req.command = CMD_UNPARSED;
+				req.command = Request::CMD_UNPARSED;
 				parse_error = "invalid syntax: cannot parse Set " + ps.ms;
 				return req;
 			}
@@ -247,18 +256,18 @@ public:
 			i_tok = ps.end;
 		}
 		else {
-			req.command = CMD_UNPARSED;
+			req.command = Request::CMD_UNPARSED;
 			parse_error = "unknown command";
 			return req;
 		}
 		i_tok++;
 		if (i_tok != tokens.end()) {
-			req.command = CMD_UNPARSED;
+			req.command = Request::CMD_UNPARSED;
 			parse_error = "invalid syntax: extra tokens after the end of command";
 			return req;
 		}
 		if (is_keyword(req.target)) {
-			req.command = CMD_UNPARSED;
+			req.command = Request::CMD_UNPARSED;
 			parse_error = "invalid target: target cannot be a keyword";
 			return req;
 		}

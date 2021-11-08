@@ -25,19 +25,20 @@
 *
 */
 
-static const int CMD_UNPARSED = -1;
-static const int CMD_CREATE = 10;
-static const int CMD_INSERT = 20;
-static const int CMD_SEARCH = 30;
-static const int CMD_SEARCH_WHERE = 40;
-static const int CMD_CONTAINS = 50;
-
-static const int FILTER_INTERSECTS = 100;
-static const int FILTER_SUBSET = 200;
-static const int FILTER_SUPERSET = 300;
-
 class Request {
 public:
+
+	static const int CMD_UNPARSED = -1;
+	static const int CMD_CREATE = 10;
+	static const int CMD_INSERT = 20;
+	static const int CMD_SEARCH = 30;
+	static const int CMD_SEARCH_WHERE = 40;
+	static const int CMD_CONTAINS = 50;
+	static const int CMD_PRINT = 60;
+
+	static const int FILTER_INTERSECTS = 100;
+	static const int FILTER_SUBSET = 200;
+	static const int FILTER_SUPERSET = 300;
 
 	int command;
 	std::string target;
@@ -48,38 +49,41 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& os, const Request& req) {
-	if (!(req.command == CMD_UNPARSED))
+	if (!(req.command == Request::CMD_UNPARSED))
 	{
 	os << "Request {" << std::endl << "  command: ";
-	if (req.command == CMD_CREATE) {
+	if (req.command == Request::CMD_CREATE) {
 		os << "CREATE";
 	}
-	else if (req.command == CMD_INSERT) {
+	else if (req.command == Request::CMD_INSERT) {
 		os << "INSERT";
 	}
-	else if (req.command == CMD_CONTAINS) {
+	else if (req.command == Request::CMD_CONTAINS) {
 		os << "CONTAINS";
 	}
-	else if (req.command == CMD_SEARCH) {
+	else if (req.command == Request::CMD_SEARCH) {
 		os << "SEARCH";
 	}
-	else if (req.command == CMD_SEARCH_WHERE) {
+	else if (req.command == Request::CMD_SEARCH_WHERE) {
 		os << "SEARCH_WHERE";
+	}
+	else if (req.command == Request::CMD_PRINT) {
+		os << "PRINT";
 	}
 	//else if (req.command == CMD_UNPARSED) {
 	//	os << "unparsed";
 	//}
 
 		os << std::endl << "  target: '";
-			os << req.target << "'" << std::endl << "  payload: " << req.payload << std::endl << "  filter: ";
-			if (req.filter == FILTER_INTERSECTS) {
-				os << "(intersects)";
-			}
-			else if (req.filter == FILTER_SUBSET) {
-				os << "(subset)";
-			}
-			else if (req.filter == FILTER_SUPERSET) {
-				os << "(superset)";
+		os << req.target << "'" << std::endl << "  payload: " << req.payload << std::endl << "  filter: ";
+		if (req.filter == Request::FILTER_INTERSECTS) {
+			os << "(intersects)";
+		}
+		else if (req.filter == Request::FILTER_SUBSET) {
+			os << "(subset)";
+		}
+		else if (req.filter == Request::FILTER_SUPERSET) {
+			os << "(superset)";
 			}
 		os << std::endl << "}" << std::endl;
 		return os;
