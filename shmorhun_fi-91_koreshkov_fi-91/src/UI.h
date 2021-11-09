@@ -121,7 +121,7 @@ class UI {
 				return CODE_DB_OK;
 			}
 
-			if (sql_req.command == Request::CMD_PRINT) {
+			if (sql_req.command == Request::CMD_PRINT_TREE) {
 				db_res = database.PrintTree(sql_req.target, std::cout);
 
 				if (db_res.error) {

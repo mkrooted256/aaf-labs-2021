@@ -45,13 +45,14 @@ class RequestParser {
 
 		i++;
 
-		enum { VAL, COMMA, END } state = VAL;
+		enum { VAL, COMMA_OR_SPACE, END} state = VAL;
 		for (; i != end; i++) {
+			
 			if ((*i)[0] == '}') {
 				state = END;
 				break;
 			}
-			if (state == VAL) {
+			if (state == VAL && (*i)[0] != '\0') {
 				int val = 0;
 				if ((*i)[0] != '0') {
 				    
@@ -70,14 +71,15 @@ class RequestParser {
 					}
 				}
 				r.set.Insert(val);
-				state = COMMA;
+				state = COMMA_OR_SPACE;
 			}
 			else {
-				if ((*i)[0] != ',') {
+				if ((*i)[0] != ',' && (*i)[0] != '\0') {
 					return parse_set_result::error("Invalid syntax (Invalid symbols in the input). Return empty set");
 				}
 				state = VAL;
 			}
+
 		}
 		if (state != END) {
 			return parse_set_result::error("Invalid syntax (Other symbols after `}` symbol).Return empty set");
@@ -172,8 +174,8 @@ public:
 		std::string cmd = toupper(*i_tok);
 
 
-		if (cmd == "PRINT") {
-			req.command = Request::CMD_PRINT;
+		if (cmd == "PRINT_TREE") {
+			req.command = Request::CMD_PRINT_TREE;
 			i_tok++;
 			req.target = *i_tok;
 		}

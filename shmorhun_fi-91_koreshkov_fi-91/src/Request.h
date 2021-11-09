@@ -34,7 +34,7 @@ public:
 	static const int CMD_SEARCH = 30;
 	static const int CMD_SEARCH_WHERE = 40;
 	static const int CMD_CONTAINS = 50;
-	static const int CMD_PRINT = 60;
+	static const int CMD_PRINT_TREE = 60;
 
 	static const int FILTER_INTERSECTS = 100;
 	static const int FILTER_SUBSET = 200;
@@ -67,8 +67,8 @@ std::ostream& operator<<(std::ostream& os, const Request& req) {
 	else if (req.command == Request::CMD_SEARCH_WHERE) {
 		os << "SEARCH_WHERE";
 	}
-	else if (req.command == Request::CMD_PRINT) {
-		os << "PRINT";
+	else if (req.command == Request::CMD_PRINT_TREE) {
+		os << "PRINT_TREE";
 	}
 	//else if (req.command == CMD_UNPARSED) {
 	//	os << "unparsed";
