@@ -1,4 +1,4 @@
-
+// #include<iostream>
 #pragma once
 #include<vector>
 #include<algorithm>
@@ -26,7 +26,7 @@ class RequestParser {
 		std::string ms;
 		static parse_set_result error(const std::string& err_msg) {
 			parse_set_result r;
-			r.ms = err_msg;
+		    r.ms = err_msg;
 			r.parsed = false;
 			return r;
 		}
@@ -45,9 +45,9 @@ class RequestParser {
 
 		i++;
 
-		enum { VAL, COMMA_OR_SPACE, END } state = VAL;
+		enum { VAL, COMMA_OR_SPACE, END} state = VAL;
 		for (; i != end; i++) {
-
+			
 			if ((*i)[0] == '}') {
 				state = END;
 				break;
@@ -55,8 +55,8 @@ class RequestParser {
 			if (state == VAL && (*i)[0] != '\0') {
 				int val = 0;
 				if ((*i)[0] != '0') {
-
-					for (int j = 0; j < (*i).size(); j++)
+				    
+					for (int j = 0;  j < (*i).size(); j++)
 					{
 						if (!isdigit((*i)[j]))
 						{
@@ -121,7 +121,7 @@ public:
 		Request req;
 		const char* ws = " \n\r\t\v\f";
 		const char* delims = "{,}";
-
+		
 		size_t start = str.find_first_not_of(ws);
 		size_t end = str.length();
 
@@ -136,7 +136,7 @@ public:
 				}
 				break;
 			}
-
+			
 			if (is_in(str[pos], delims)) {
 				if (!on_start) {
 					if (str[pos] == '{') {
@@ -146,10 +146,9 @@ public:
 					tokens.push_back(str.substr(token_start, pos - token_start));
 				}
 				tokens.push_back(str.substr(pos, 1));
-				token_start = pos = pos + 1;
+				token_start = pos = pos+1;
 			}
 			if (is_in(str[pos], ws)) {
-				
 				if (!on_start) {
 					tokens.push_back(str.substr(token_start, pos - token_start));
 				}
@@ -162,22 +161,7 @@ public:
 		if (token_start != pos && token_start < end) {
 			tokens.push_back(str.substr(token_start, pos - token_start));
 		}
-
-		auto it = tokens.begin();
-
-		while (it != tokens.end()) {
 		
-			if ((*it) == "")
-			{
-				it = tokens.erase(it);
-			}
-			it++;
-			if (it != tokens.end()) {
-				it++;
-			}
-
-		}
-
 		if (tokens.size() < 2) {
 			req.command = Request::CMD_UNPARSED;
 			parse_error = "too few tokens; parse aborted.";
@@ -248,7 +232,7 @@ public:
 			std::string filter = toupper(*i_tok);
 			if (filter == "INTERSECTS") {
 				req.filter = Request::FILTER_INTERSECTS;
-			}
+			} 
 			else if (filter == "CONTAINS") {
 				req.filter = Request::FILTER_SUPERSET;
 			}
