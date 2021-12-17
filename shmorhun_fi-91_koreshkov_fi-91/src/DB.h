@@ -90,5 +90,24 @@ public:
 		return Result::Success("");
 	}
 
+	Result Contains(std::string collection_name, Set check_set) {
+		const auto it = collections.find(collection_name);
+
+		if (it == collections.end()) {
+			std::string msg = "Collection '" + collection_name + "' does not exist";
+			return Result::Error(msg);
+		}
+		
+		if (it->second.Contains(check_set) == true)
+		{
+			return Result::Success("True (Set exist in tree)");
+		}
+		else
+		{
+			return Result::Success("False (Set does not exist in tree)");
+		}
+		
+	}
+
 	const std::map<const std::string, Collection>& GetCollections() const { return collections; }
 };

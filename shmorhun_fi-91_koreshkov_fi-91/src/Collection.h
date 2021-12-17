@@ -18,7 +18,7 @@ public:
     void Insert(const Set& new_set);
     void ExpandTo(const Set& to_set);
     void InsertSubset(const Set& new_set);
-
+    bool Contains(const Set& set_to_check);
 
 
 protected:
@@ -37,4 +37,5 @@ public:
     Collection() : root(nullptr) {};
     void Print(std::ostream& os) const;
     void Insert(const Set& new_set);
+    bool Contains(const Set& set_to_check);
 };

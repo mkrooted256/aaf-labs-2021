@@ -137,6 +137,21 @@ class UI {
 				return CODE_DB_OK;
 			}
 
+			if (sql_req.command == Request::CMD_CONTAINS) {
+				db_res = database.Contains(sql_req.target, sql_req.payload);
+
+				if (db_res.error) {
+					Output("Database error:");
+					Output("  " + db_res.msg);
+					return CODE_DB_ERR;
+				}
+
+				Output("Request successful:");
+				suffix = "  ";
+				Output(db_res.msg);
+				suffix = "";
+				return CODE_DB_OK;
+			}
 
 
 			Output("Unknown/unimplemented command");

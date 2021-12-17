@@ -37,6 +37,63 @@ void Collection::Print(std::ostream& os) const {
 }
 
 
+bool Collection::Contains(const Set& set_to_check) {
+    if (!root)
+    {
+        return false;
+    }
+    bool res = root->Contains(set_to_check);
+    return res;
+}
+
+bool Node::Contains(const Set& set_to_check) {
+    // Find the least diff of childnodes, repeate while we dont reach the leaf.
+    Node* work_node = new Node(nullptr);
+    int sup_set_mask = superset_test(set_to_check);
+    short argmin_i;
+
+    if (IsLeaf(this))
+    {
+        if (set_to_check.IsSubsetOf(set) && set.IsSubsetOf(set_to_check))
+        {
+            return true;
+        };
+        return false;
+    }
+
+    if (sup_set_mask != 0)
+    {
+        Set complements[2] = {
+        set_to_check.Minus(subnodes[0]->set),
+        (subnodes[1] != nullptr) ? set_to_check.Minus(subnodes[1]->set) : Set(),
+        };
+        size_t complement_sizes[2] = {
+            complements[0].Size(),
+            complements[1].Size()
+        };
+
+        if (complement_sizes[0] < complement_sizes[1]) {
+            argmin_i = 0;
+        }
+
+        else if (complement_sizes[1] < complement_sizes[0]) {
+            argmin_i = 1;
+        }
+
+        else
+        {
+            return (subnodes[0]->Contains(set_to_check) + subnodes[1]->Contains(set_to_check));
+        }
+        return subnodes[argmin_i]->Contains(set_to_check);
+    }
+    else
+    {
+        return false;
+    }
+
+}
+   
+
 void Collection::Insert(const Set& new_set) {
     if (!root) { 
         root = new Node(nullptr, new_set);
@@ -138,6 +195,14 @@ unsigned int Node::subset_test(const Set& set) const {
         mask |= 2;
     }
     return mask;
+}
+
+bool IsLeaf(const Node check_node) {
+    if (check_node.subnodes[0] == nullptr && check_node.subnodes[1] == nullptr)
+    {
+        return true;
+    }
+    return false;
 }
 
 
