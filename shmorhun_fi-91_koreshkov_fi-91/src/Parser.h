@@ -158,6 +158,22 @@ public:
 				pos++;
 			}
 		}
+
+		auto it = tokens.begin();
+
+		while (it != tokens.end())
+		{
+			if ((*it) == "")
+			{
+				it = tokens.erase(it);
+			}
+			if (it != tokens.end())
+			{
+				it++;
+			}
+		}
+
+
 		if (token_start != pos && token_start < end) {
 			tokens.push_back(str.substr(token_start, pos - token_start));
 		}
