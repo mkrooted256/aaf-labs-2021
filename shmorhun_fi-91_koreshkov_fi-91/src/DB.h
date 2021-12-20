@@ -33,10 +33,19 @@ private:
 	std::map<const std::string, Collection> collections;
 
 public:
+	void PrintSets(std::vector<Set> sets_collection) {
+		auto it = sets_collection.begin();
+		while (it != sets_collection.end())
+		{
+			std::cout << *it << ' ';
+			it++;
+		}
+		std::cout << std::endl;
+	}
 
 	Result Create(std::string collection_name) {
 		const auto pair = collections.try_emplace(collection_name);
-		
+
 		const auto it = pair.first;
 		const auto collectionCreated = pair.second;
 
@@ -70,7 +79,7 @@ public:
 			return Result::Error(msg);
 		}
 
-		for (const Set& insert_set: insert_sets) {
+		for (const Set& insert_set : insert_sets) {
 			it->second.Insert(insert_set);
 		}
 
@@ -86,7 +95,7 @@ public:
 		}
 
 		it->second.Print(os);
-		
+
 		return Result::Success("");
 	}
 
@@ -97,7 +106,7 @@ public:
 			std::string msg = "Collection '" + collection_name + "' does not exist";
 			return Result::Error(msg);
 		}
-		
+
 		if (it->second.Contains(check_set) == true)
 		{
 			return Result::Success("True (Set exist in tree)");
@@ -106,8 +115,94 @@ public:
 		{
 			return Result::Success("False (Set does not exist in tree)");
 		}
-		
+
 	}
 
-	const std::map<const std::string, Collection>& GetCollections() const { return collections; }
-};
+	Result Search(std::string collection_name) {
+
+		const auto it = collections.find(collection_name);
+
+		if (it == collections.end()) {
+			std::string msg = "Collection '" + collection_name + "' does not exist";
+			return Result::Error(msg);
+		}
+		std::vector<Set> res = it->second.Search();
+		if (res.size() == 0)
+		{
+			return Result::Success("No sets it this database");
+		}
+		else
+		{
+			PrintSets(res);
+			return Result::Success("Found sets");
+		}
+
+	}
+
+	Result Intersects(std::string collection_name, Set intersec_set) {
+
+		const auto it = collections.find(collection_name);
+
+		if (it == collections.end()) {
+			std::string msg = "Collection '" + collection_name + "' does not exist";
+			return Result::Error(msg);
+		}
+		std::vector<Set> res = it->second.Intersects(intersec_set);
+		if (res.size() == 0)
+		{
+			return Result::Success("No sets in this database");
+		}
+		else
+		{
+			PrintSets(res);
+			return Result::Success("Found sets");
+		}
+
+	}
+
+	Result Contains_Search(std::string collection_name, Set subset) {
+
+		const auto it = collections.find(collection_name);
+
+		if (it == collections.end()) {
+			std::string msg = "Collection '" + collection_name + "' does not exist";
+			return Result::Error(msg);
+		}
+		std::vector<Set> res = it->second.Contains_Search(subset);
+		if (res.size() == 0)
+		{
+			return Result::Success("No sets in this database");
+		}
+		else
+		{
+			PrintSets(res);
+			return Result::Success("Found sets");
+		}
+
+	}
+
+	Result Contained_By(std::string collection_name, Set superset) {
+
+		const auto it = collections.find(collection_name);
+
+		if (it == collections.end()) {
+			std::string msg = "Collection '" + collection_name + "' does not exist";
+			return Result::Error(msg);
+		}
+		std::vector<Set> res = it->second.Contained_By(superset);
+		if (res.size() == 0)
+		{
+			return Result::Success("No sets in this database");
+		}
+		else
+		{
+			PrintSets(res);
+			return Result::Success("Found sets");
+		}
+	}
+
+
+
+
+		const std::map<const std::string, Collection>& GetCollections() const { return collections; }
+	};

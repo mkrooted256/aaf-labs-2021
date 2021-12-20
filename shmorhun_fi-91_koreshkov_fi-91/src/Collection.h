@@ -19,7 +19,10 @@ public:
     void ExpandTo(const Set& to_set);
     void InsertSubset(const Set& new_set);
     bool Contains(const Set& set_to_check);
-
+    std::vector<Set> Search(std::vector<Set>& res);
+    std::vector<Set> Intersects(std::vector<Set>& res, Set intersec_set);
+    std::vector<Set> Contains_Search(std::vector<Set>& res, Set contain_set);
+    std::vector<Set> Contained_By(std::vector<Set>& res, Set contained_by_set);
 
 protected:
 
@@ -38,4 +41,8 @@ public:
     void Print(std::ostream& os) const;
     void Insert(const Set& new_set);
     bool Contains(const Set& set_to_check);
+    std::vector<Set> Intersects(Set intersec_set);
+    std::vector<Set> Contains_Search(Set contain_set);
+    std::vector<Set> Contained_By(Set contained_by_set);
+    std::vector<Set> Search();
 };

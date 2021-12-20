@@ -152,6 +152,74 @@ class UI {
 				suffix = "";
 				return CODE_DB_OK;
 			}
+			
+			if (sql_req.command == Request::CMD_SEARCH) {
+				
+				db_res = database.Search(sql_req.target);
+
+				if (db_res.error) {
+					Output("Database error:");
+					Output("  " + db_res.msg);
+					return CODE_DB_ERR;
+				}
+
+				Output("Request successful:");
+				suffix = "  ";
+				Output(db_res.msg);
+				suffix = "";
+				return CODE_DB_OK;
+			}
+
+			if (sql_req.filter == Request::FILTER_INTERSECTS) {
+
+				db_res = database.Intersects(sql_req.target, sql_req.payload);
+
+				if (db_res.error) {
+					Output("Database error:");
+					Output("  " + db_res.msg);
+					return CODE_DB_ERR;
+				}
+
+				Output("Request successful:");
+				suffix = "  ";
+				Output(db_res.msg);
+				suffix = "";
+				return CODE_DB_OK;
+			}
+
+			if (sql_req.filter == Request::FILTER_SUPERSET) {
+
+				db_res = database.Contains_Search(sql_req.target, sql_req.payload);
+
+				if (db_res.error) {
+					Output("Database error:");
+					Output("  " + db_res.msg);
+					return CODE_DB_ERR;
+				}
+
+				Output("Request successful:");
+				suffix = "  ";
+				Output(db_res.msg);
+				suffix = "";
+				return CODE_DB_OK;
+			}
+
+			if (sql_req.filter == Request::FILTER_SUBSET) {
+
+				db_res = database.Contained_By(sql_req.target, sql_req.payload);
+				if (db_res.error) {
+					Output("Database error:");
+					Output("  " + db_res.msg);
+					return CODE_DB_ERR;
+				}
+
+				Output("Request successful:");
+				suffix = "  ";
+				Output(db_res.msg);
+				suffix = "";
+				return CODE_DB_OK;
+			}
+
 
 
 			Output("Unknown/unimplemented command");

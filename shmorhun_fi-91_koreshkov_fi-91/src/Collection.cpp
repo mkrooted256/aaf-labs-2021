@@ -36,7 +36,6 @@ void Collection::Print(std::ostream& os) const {
 
 }
 
-
 bool Collection::Contains(const Set& set_to_check) {
     if (!root)
     {
@@ -46,9 +45,150 @@ bool Collection::Contains(const Set& set_to_check) {
     return res;
 }
 
-bool Node::Contains(const Set& set_to_check) {
-    // Find the least diff of childnodes, repeate while we dont reach the leaf.
+std::vector<Set> Collection::Contained_By(Set superset) {
+    if (!root)
+    {
+        return {};
+    }
+
+    std::vector<Set> res;
+
+    return this->root->Contained_By(res, superset);
+}
+
+
+std::vector<Set> Node::Contained_By(std::vector<Set>& res, Set superset) {
+
+
+    if (IsLeaf(this))
+    {
+        if (set.IsSubsetOf(superset))
+        {
+            res.push_back(set);
+        }
+        
+        return res;
+    }
+
+    if (subnodes[0]->set.IsSubsetOf(superset)) {
+
+        subnodes[0]->Contained_By(res,superset);
+    }
+
+    if (subnodes[1] != nullptr && subnodes[1]->set.IsSubsetOf(superset)) {
+
+        subnodes[1]->Contained_By(res,superset);
+    }
+
+    return res;
+}
+
+std::vector<Set> Collection::Contains_Search(Set subset) {
+    if (!root)
+    {
+        return {};
+    }
+
+    std::vector<Set> res;
+
+    return this->root->Contains_Search(res, subset);
+}
+
+std::vector<Set> Node::Contains_Search(std::vector<Set>& res, Set subset) {
     
+
+    if (IsLeaf(this))
+    {
+        res.push_back(set);
+        return res;
+    }
+    
+    if (subset.IsSubsetOf(subnodes[0]->set)) {
+       
+        subnodes[0]->Contains_Search(res, subset);
+    }
+    
+    if (subnodes[1] != nullptr && subset.IsSubsetOf(subnodes[1]->set)) {
+
+        subnodes[1]->Contains_Search(res, subset);
+    }
+
+    return res;
+}
+
+
+std::vector<Set> Collection::Intersects(Set intersec_set) {
+    if (!root)
+    {
+        return {};
+    }
+
+    std::vector<Set> res;
+    
+    return this->root->Intersects(res, intersec_set);
+}
+
+std::vector<Set> Node::Intersects(std::vector<Set>& res, Set intersec_set) {
+
+    if (IsLeaf(this))
+    {
+        if ((set.data.size() - set.Minus(intersec_set).data.size()) > 0)
+        {
+            res.push_back(set);
+            return res;
+        }
+    }
+
+    if ((set.data.size() - set.Minus(intersec_set).data.size()) > 0)
+    {
+        subnodes[0]->Intersects(res, intersec_set);
+
+        if (subnodes[1] != nullptr)
+        {
+            subnodes[1]->Intersects(res, intersec_set);
+        }
+    }
+   
+    return res;
+}
+
+
+std::vector<Set> Collection::Search() {
+
+    if (!root)
+    {
+        return {};
+    }
+    
+    std::vector<Set> res;
+
+    return this->root->Search(res);
+
+}
+
+std::vector<Set> Node::Search(std::vector<Set>& res) {
+
+    if (this->subnodes[0])
+    {
+        this->subnodes[0]->Search(res);
+       
+    }
+    if (this->subnodes[1])
+    {
+        this->subnodes[1]->Search(res);
+        
+    }
+    
+    if (IsLeaf(this))
+    {
+        res.push_back(this->set);
+    }
+ 
+    return res;
+}
+
+bool Node::Contains(const Set& set_to_check) {
+  
     if (IsLeaf(this))
     {
         if (set.IsSubsetOf(set_to_check))
