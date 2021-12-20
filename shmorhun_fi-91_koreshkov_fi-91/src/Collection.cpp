@@ -70,15 +70,9 @@ std::vector<Set> Node::Contained_By(std::vector<Set>& res, Set superset) {
         return res;
     }
 
-    if (subnodes[0]->set.IsSubsetOf(superset)) {
 
-        subnodes[0]->Contained_By(res,superset);
-    }
-
-    if (subnodes[1] != nullptr && subnodes[1]->set.IsSubsetOf(superset)) {
-
-        subnodes[1]->Contained_By(res,superset);
-    }
+    subnodes[0]->Contained_By(res, superset);
+    subnodes[1]->Contained_By(res, superset);
 
     return res;
 }
