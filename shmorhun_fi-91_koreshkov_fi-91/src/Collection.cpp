@@ -70,6 +70,11 @@ std::vector<Set> Node::Contained_By(std::vector<Set>& res, Set superset) {
         return res;
     }
 
+    if ((set.data.size() - set.Minus(superset).data.size()) == set.data.size())
+    {
+        return {};
+    }
+
 
     subnodes[0]->Contained_By(res, superset);
     subnodes[1]->Contained_By(res, superset);
