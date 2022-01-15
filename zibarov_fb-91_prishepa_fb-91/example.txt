@@ -1,0 +1,18 @@
+CREATE owners (owner_id INDEXED, owner_name, owner_age); CREATE cats (cat_id INDEXED, cat_owner_id INDEXED, cat_name);
+INSERT INTO owners("1", "Vasya", "30"); INSERT INTO owners("2", "Vasya2", "15");
+INSERT cats ("10", "1", "Murzik"); INSERT cats ("11", "2", "Murzik"); INSERT cats ("12", "1", "Murzikk");
+SELECT cat_id, cat_owner_id
+ FROM cats
+ WHERE cat_name = "Murzik";
+
+SELECT * FROM cats;
+SELECT cat_id, cat_owner_id FROM cats;
+
+SELECT *
+ FROM cats
+ JOIN owners ON cat_owner_id = owner_id
+ where owner_age > "16";
+ delete from cats where cat_name = "Murzik";
+DELETE FROM cats;
+DELETE FROM cats WHERE cat_name = "Murzik";
+DELETE FROM cats WHERE cat_id != "12";
